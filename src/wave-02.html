@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="600" height="200" style="border: 1px solid"></canvas>
+
+    <script>
+        let canvas;
+        let ctx;
+        let period;
+
+        class MousePosition {
+            constructor(x, y) {
+                (this.x = x), (this.y = y);
+            }
+        }
+
+        class PointPosition {
+            constructor(x, y) {
+                (this.x = x), (this.y = y);
+            }
+        }
+        // Holds changing mouse position
+        let mousePos = new MousePosition(0, 0);
+
+        // Holds changing mouse position
+        let pointPos = new PointPosition(0, 0);
+
+        // Call for our function to execute when page is loaded
+        document.addEventListener("DOMContentLoaded", setupCanvas);
+
+        function setupCanvas() {
+            // Get reference to canvas element
+            canvas = document.getElementById("myCanvas");
+            // Get methods for manipulating the canvas
+            ctx = canvas.getContext("2d");
+
+            period = 2;
+
+            draw(ctx, canvas.width, canvas.height, period);
+            drawAxis(ctx, canvas.width, canvas.height);
+
+            // Execute redrawCanvas when the mouse moves
+            canvas.addEventListener("mousemove", redrawCanvas);
+        }
+
+        function redrawCanvas(evt) {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Redraw canvas
+            draw(ctx, canvas.width, canvas.height, period);
+            drawAxis(ctx, canvas.width, canvas.height);
+
+            // Call for MousePosition object to be updated
+            getMousePosition(evt);
+
+            // Draw x & y coordinates using updated MousePosition settings
+            // drawTextAtPoint(ctx, "X : " + mousePos.x, 15, 25);
+            // drawTextAtPoint(ctx, "Y : " + mousePos.y, 15, 45);
+
+            // getPointOnPath(evt);
+
+            // drawTextAtPoint(ctx, "pX : " + pointPos.x, 15, 65);
+            // drawTextAtPoint(ctx, "pY : " + pointPos.y, 15, 85);
+
+            //drawCrossAxis(mousePos.x, mousePos.y);
+
+            drawCircle(mousePos.x);
+        }
+
+        /**
+         * ctx: a CanvasRenderingContext2D,
+         *      fetchable with canvas.getContext('2d')
+         * w: width of canvas
+         * h: height of canvas
+         */
+        draw = function (ctx, w, h, p) {
+            ctx.strokeStyle = `#000`;
+            ctx.lineWidth = 0.5;
+
+            let Y = function (x) {
+                return 0 + (h / p / 2) * Math.sin(p * Math.PI * x / w) + (h / 2);
+            };
+            for (let x = 0; x < w + w / 4; x += 1) {
+                let y = Y(x);
+                ctx.fillRect(x - w / 4, y, 1, 1);
+            }
+        }
+
+        getY = function (x, w, h, p) {
+            return 0 - (h / p / 2) * Math.sin(p * Math.PI * x / w) + (h / 2);
+        }
+
+        function drawAxis(ctx, cW, cH) {
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "red";
+
+            //x axis
+            ctx.lineTo(0, cH / 2);
+            ctx.lineTo(cW, cH / 2);
+            ctx.stroke();
+        }
+
+        function getMousePosition(evt) {
+            // Get the canvas size and position relative to the web page
+            let canvasDimensions = canvas.getBoundingClientRect();
+
+            // Get canvas x & y position
+            mousePos.x = Math.floor(evt.clientX - canvasDimensions.left);
+            mousePos.y = Math.floor(evt.clientY - canvasDimensions.top);
+
+            return mousePos;
+        }
+
+        function drawCrossAxis(x, y) {
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "red";
+
+            if (x < 0) x = -x;
+            else x = x;
+
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+        function drawCircle() {
+            ctx.beginPath();
+            let radius = 8;
+
+            let y = getY(mousePos.x - canvas.width / 4, canvas.width, canvas.height, period);
+
+            ctx.arc(mousePos.x, y, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+    </script>
+</body>
+
+</html>

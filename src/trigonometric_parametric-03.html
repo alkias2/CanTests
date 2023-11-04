@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="600" height="200" style="border: 1px solid"></canvas>
+    <script>
+        let canvas;
+        let ctx;
+        let period;
+
+        class MousePosition {
+            constructor(x, y) {
+                (this.x = x), (this.y = y);
+            }
+        }
+
+        class PointPosition {
+            constructor(x, y) {
+                (this.x = x), (this.y = y);
+            }
+        }
+        // Holds changing mouse position
+        let mousePos = new MousePosition(0, 0);
+
+        // Holds changing mouse position
+        let pointPos = new PointPosition(0, 0);
+
+        // Call for our function to execute when page is loaded
+        document.addEventListener("DOMContentLoaded", setupCanvas);
+
+        function setupCanvas() {
+            // Get reference to canvas element
+            canvas = document.getElementById("myCanvas");
+            // Get methods for manipulating the canvas
+            ctx = canvas.getContext("2d");
+
+            period = 3;
+
+            drawWavesAndAxis();
+
+            // Execute redrawCanvas when the mouse moves
+            canvas.addEventListener("mousemove", redrawCanvas);
+        }
+
+        function drawWavesAndAxis() {
+            draw(ctx, canvas.width / 2, canvas.height, -canvas.width / 4, false, false);
+            draw(ctx, canvas.width / 2, canvas.height, canvas.width / 4, true, false);
+            draw(ctx, canvas.width / 2, canvas.height, canvas.width - canvas.width / 4, false, false);
+
+            drawAxis(ctx, canvas.width, canvas.height);
+        }
+
+        function redrawCanvas(evt) {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Redraw canvas
+            drawWavesAndAxis();
+
+            // Call for MousePosition object to be updated
+            getMousePosition(evt);
+
+            // Draw x & y coordinates using updated MousePosition settings
+            drawTextAtPoint(ctx, "X : " + mousePos.x, 15, 25);
+            drawTextAtPoint(ctx, "Y : " + mousePos.y, 15, 45);
+
+            getPointOnPath(evt);
+
+            drawTextAtPoint(ctx, "pX : " + pointPos.x, 15, 65);
+            drawTextAtPoint(ctx, "pY : " + pointPos.y, 15, 85);
+
+            drawCrossAxis(mousePos.x, mousePos.y);
+
+            drawCircle(mousePos.x);
+        }
+
+        function drawCircle() {
+            ctx.beginPath();
+            let radius = 2;
+            ctx.arc(pointPos.x, pointPos.y, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function drawCrossAxis(x, y) {
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "red";
+
+            if (x < 0) x = -x;
+            else x = x;
+
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+
+        function drawAxis(ctx, cW, cH) {
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "red";
+
+            //x axis
+            ctx.lineTo(0, cH / 2);
+            ctx.lineTo(cW, cH / 2);
+            ctx.stroke();
+
+            //y axis
+            // ctx.moveTo(cW / 2, 0);
+            // ctx.lineTo(cW / 2, cH);
+            // ctx.stroke();
+        }
+
+        function Y(x, w, h, up) {
+            if (up) {
+                return 0 - (h / 4) * Math.sin((1 * Math.PI * x) / w) + h / 2;
+            } else {
+                return 0 + (h / 4) * Math.sin((1 * Math.PI * x) / w) + h / 2;
+            }
+        }
+
+        function Y1(x, w, h, up) {
+            // if(up){
+            //     return 0 + h/4 * Math.cos((2 * Math.PI * x) / w) + h/4 ;
+            // }else{
+            //     return 0 + (h / 2) * Math.cos((2 * x) / w) + h / 4 - 4;
+            // }
+            if (up) {
+                return 0 - (h / 4) * Math.cos((1 * Math.PI * x) / w) + h / 2;
+            } else {
+                return 0 + (h / 4) * Math.sin((1 * Math.PI * x) / w) + h / 2;
+            }
+        }
+
+        /**
+         * ctx: a CanvasRenderingContext2D,
+         * fetchable with canvas.getContext('2d')
+         * w: width of canvas
+         * h: height of canvas
+         */
+        function draw(ctx, w, h, s, up, quarter) {
+            // as: ctx = canvas context
+            // as: w = wave width, in conjunction with canvas width
+            // as: h = wave heigh, in conjunction with canvas height
+            // as: s = start point in x Axis
+            // as: up = boolean indicates if waver period is up or down
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "black";
+
+            for (let x = 0; x < w; x += 1) {
+                let y = Y(x, w, h, up);
+                if (quarter && x < w / 2) {
+                    continue;
+                }
+                // pointPos.x = x + s;
+                // pointPos.y = y;
+                ctx.lineTo(x + s, y);
+            }
+            ctx.stroke();
+        }
+
+        function getY(ctx, w, h, s, up, quarter) {
+            // as: ctx = canvas context
+            // as: w = wave width, in conjunction with canvas width
+            // as: h = wave heigh, in conjunction with canvas height
+            // as: s = start point in x Axis
+            // as: up = boolean indicates if waver period is up or down
+            for (let x = 0; x < w; x += 1) {
+                let y = Y(x, w, h, up);
+                if (quarter && x < w / 2) {
+                    continue;
+                }
+                return y;
+            }
+        }
+
+        function getPointOnPath(evt) {
+            // Get the canvas size and position relative to the web page
+            let canvasDimensions = canvas.getBoundingClientRect();
+            // Get canvas x & y position
+            pointPos.x = Math.floor(evt.clientX - canvasDimensions.left);
+            //pointPos.y = Math.floor(evt.clientY - canvasDimensions.top);
+
+            let quarter;
+            let x = pointPos.x;
+            let w = canvas.width;
+            let h = canvas.height;
+            let y;
+
+            if (x <= w / 4) {
+                quarter = 1;
+                //y = getY(ctx, w/2, h, -w/4, false, false);
+                y = Math.floor(Y1(x, w / 2, h, false));
+            }
+            if (x > w / 4 && x <= w / 2) {
+                quarter = 2;
+                y = Math.floor(Y1(x, w/4, h, true));
+            }
+            if (x > w / 2 && x <= (w / 4) * 3) {
+                quarter = 3;
+            }
+            if (x > (w / 4) * 3) {
+                quarter = 4;
+            }
+            console.log("position in: quarter " + quarter);
+            pointPos.y = y;
+            console.log("position in: Y " + quarter);
+
+            return pointPos;
+        }
+
+        function getMousePosition(evt) {
+            // Get the canvas size and position relative to the web page
+            let canvasDimensions = canvas.getBoundingClientRect();
+
+            // Get canvas x & y position
+            mousePos.x = Math.floor(evt.clientX - canvasDimensions.left);
+            mousePos.y = Math.floor(evt.clientY - canvasDimensions.top);
+
+            return mousePos;
+        }
+
+        function drawTextAtPoint(ctx, text, x, y) {
+            ctx.font = "15px Arial";
+            ctx.fillText(text, x, y);
+        }
+    </script>
+</body>
+
+</html>

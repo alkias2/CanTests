@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="600" height="200" style="border: 1px solid"></canvas>
+
+    <script>
+        let canvas;
+        let ctx;
+        let period;
+
+        // Call for our function to execute when page is loaded
+        document.addEventListener("DOMContentLoaded", setupCanvas);
+
+        function setupCanvas() {
+            // Get reference to canvas element
+            canvas = document.getElementById("myCanvas");
+            // Get methods for manipulating the canvas
+            ctx = canvas.getContext("2d");
+
+            period = 2;
+
+            draw(ctx, canvas.width, canvas.height, period);
+            drawAxis(ctx, canvas.width, canvas.height)
+        }
+
+        /**
+         * ctx: a CanvasRenderingContext2D,
+         *      fetchable with canvas.getContext('2d')
+         * w: width of canvas
+         * h: height of canvas
+         */
+        draw = function (ctx, w, h , p) {
+            ctx.strokeStyle = `#000`;
+            ctx.lineWidth = 0.5;
+
+            let Y = function (x) {
+                return 0 + (h / p / 2) * Math.sin(p * Math.PI * x / w) + (h / 2);
+            };
+            for (let x = 0; x < w + w/4; x += 1) {
+                let y = Y(x);
+                ctx.fillRect(x-w/4, y, 1, 1);
+            }
+        }
+        function drawAxis(ctx, cW, cH) {
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "red";
+
+            //x axis
+            ctx.lineTo(0, cH / 2);
+            ctx.lineTo(cW, cH / 2);
+            ctx.stroke();
+
+            //y axis
+            // ctx.moveTo(cW / 2, 0);
+            // ctx.lineTo(cW / 2, cH);
+            // ctx.stroke();
+        }
+    </script>
+</body>
+
+</html>

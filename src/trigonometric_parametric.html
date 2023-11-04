@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="600" height="200" style="border: 1px solid;"></canvas>
+    <script>
+        const ctx = myCanvas.getContext("2d");
+        const cnvWidth = myCanvas.width;
+        const cnvHeight = myCanvas.height;
+        const period = 3;
+       
+        ctx.lineCap = "round";
+        ctx.lineJoin = 'round';
+       
+        
+        function drawAxis(ctx, cW, cH) {
+            ctx.beginPath();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = "red";
+
+            //x axis
+            ctx.lineTo(0, cH/2);
+            ctx.lineTo(cW, cH/2);
+            ctx.stroke();
+
+            //y axis
+            ctx.moveTo(cW / 2, 0);
+            ctx.lineTo(cW / 2, cH);
+            ctx.stroke();
+        }
+
+        /**
+         * ctx: a CanvasRenderingContext2D,
+         * fetchable with canvas.getContext('2d')
+         * w: width of canvas
+         * h: height of canvas
+         */
+        draw = function (ctx, w, h, s , up) {
+            ctx.lineWidth = 1
+
+            let Y = function (x) {
+                if(up){
+                    return 0 - (h / 4) * Math.sin((1 * Math.PI * x) / w) + h / 2;
+                }else{
+                    return 0 + (h / 4) * Math.sin((1 * Math.PI * x) / w) + h / 2;
+                }                
+            }
+            for (let x = 0; x < w; x += 1) {
+                let y = Y(x)
+                ctx.fillRect(x+s, y, 1, 1)
+            }
+        }
+        let currentPeriod = 0;
+        let up = false;
+        for (let i=0; i<period; i++){
+            draw(ctx, cnvWidth/period, cnvHeight, currentPeriod, up);
+            currentPeriod = currentPeriod + cnvWidth/period;
+            up = !up;
+        }
+        drawAxis(ctx,cnvWidth, cnvHeight );
+        //draw(ctx, cnvWidth/3, cnvHeight, cnvWidth/3);
+    </script>
+</body>
+
+</html>
