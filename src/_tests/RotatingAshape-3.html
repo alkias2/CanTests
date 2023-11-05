@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        class Circle {
+            constructor(options) {
+                this.cx = options.x;
+                this.cy = options.y;
+                this.radius = options.radius;
+                this.color = options.color;
+                this.angle = 0;
+                this.toAngle = this.angle;
+
+                this.binding();
+            }
+
+            binding() {
+                const self = this;
+                window.addEventListener('mousemove', (e) => {
+                    self.update(e.clientX, e.clientY);
+                });
+            }
+
+            update(nx, ny) {
+                this.toAngle = Math.atan2(ny - this.cy, nx - this.cx);
+            }
+
+            render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.save();
+
+                ctx.beginPath();
+
+                ctx.lineWidth = 1;
+
+                ctx.translate(this.cx, this.cy);
+
+                if (this.toAngle !== this.angle) {
+                    ctx.rotate(this.toAngle - this.angle);
+                }
+
+                ctx.strokeStyle = this.color;
+                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.beginPath();
+
+                ctx.fillStyle = 'black';
+                ctx.fillRect(-this.radius / 4, -this.radius / 4, 20, 20);
+
+                ctx.closePath();
+                ctx.restore();
+            }
+        }
+
+        var rotatingCircle = new Circle({
+            x: 150,
+            y: 100,
+            radius: 40,
+            color: 'black'
+        });
+
+        function animate() {
+            rotatingCircle.render();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

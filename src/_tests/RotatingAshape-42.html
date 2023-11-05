@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const startDegree = 135;
+        const increaseDegree = 45;
+
+        function lines() {
+            var deg = 45;
+            context.beginPath();
+
+            context.arc(cw / 2, ch / 2, cw/2-50, 0, Math.PI * 2);
+            context.stroke();
+
+            for(let x=45; x<=360; x+=45){
+                drawSubLine(x);
+            }
+
+        }
+
+        function drawSubLine(degree) {
+            context.save();
+            // Translate the context to the point we want to rotate around
+            context.translate(cw / 2, ch / 2);
+            // Perform the rotation
+            context.rotate(degree * Math.PI / 180);
+
+            // Draw the line
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(-cw / 2, 0);
+            context.stroke();
+
+            // Translate the context back to it's original position
+            context.translate(-cw / 2, -ch / 2);
+            context.restore();
+        }
+
+        lines();
+    </script>
+</body>
+
+</html>

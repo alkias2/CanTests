@@ -67,6 +67,10 @@
             // drawTextAtPoint(ctx, "X : " + mousePos.x, 15, 25);
             // drawTextAtPoint(ctx, "Y : " + mousePos.y, 15, 45);
 
+           
+            // for(let i=45; i<=360; i+=45){
+            //     dowSunAxis(i,mousePos.x);
+            // }
             drawCircle(mousePos.x);
             
         }
@@ -131,40 +135,39 @@
             ctx.fill();
             ctx.stroke();
 
-            ctx.save();
-            dowSunAxis(mousePos.x,y+6);
-            ctx.restore(); 
+            // ctx.save();
+            // ctx.translate(mousePos.x, y);
+            // for(let i=45; i<=360; i+=45){
+            //     dowSunAxis(i,mousePos.x,y);
+            // }
+            // ctx.translate(-mousePos.x, -y);
+            // ctx.restore(); 
            
         }
-        function dowSunAxis(x,y){
-                //let y = getY(mousePos.x - canvas.width / 4, canvas.width, canvas.height, period);
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = "#000";
-                ctx.fillStyle = "#000"; 
-                
-                // ctx.beginPath();
-                // ctx.moveTo(x,y);
-                // ctx.lineTo(x, y+2);
-                // ctx.stroke();
-                //ctx.save();
-                for(let i=0; i<8; i++){
-                   
-                    ctx.translate(x, y); // pivot point
-                    ctx.rotate(sunAxiDegreesRotate * Math.PI / 180); // rotate square in radians
+        function dowSunAxis(degrees, x){
+            let y = getY(mousePos.x - canvas.width / 4, canvas.width, canvas.height, period);
+            ctx.save();
+            // Translate the context to the point we want to rotate around
+            ctx.translate(mousePos.x, y);
+            // Perform the rotation
+            ctx.rotate(degrees * Math.PI / 180);
 
-                    ctx.fillRect(x, y, 2, 2);
+            // Draw the line
+            ctx.beginPath();
 
-                    // ctx.beginPath();
-                    // ctx.moveTo(x,y);
-                    // ctx.lineTo(x, y+2);
-                    // ctx.stroke();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#000";
 
-                   
+            ctx.moveTo(8, 0);
+            //ctx.lineTo(-canvas.width / 2, 0);
+            //ctx.lineTo(-x / 2, 0);
+            ctx.lineTo(11, 0);
+            ctx.stroke();
 
-                    sunAxiDegreesRotate = sunAxiDegreesRotate + 45;
-                }  
-                //ctx.restore();             
-            }
+            // Translate the context back to it's original position
+            ctx.translate(-mousePos.x, -y);
+            ctx.restore();   
+        }
     </script>
 </body>
 

@@ -14,7 +14,6 @@
         let canvas;
         let ctx;
         let period;
-        let sunAxiDegreesRotate;
 
         class MousePosition {
             constructor(x, y) {
@@ -22,16 +21,8 @@
             }
         }
 
-        class PointPosition {
-            constructor(x, y) {
-                (this.x = x), (this.y = y);
-            }
-        }
         // Holds changing mouse position
         let mousePos = new MousePosition(0, 0);
-
-        // Holds changing mouse position
-        let pointPos = new PointPosition(0, 0);
 
         // Call for our function to execute when page is loaded
         document.addEventListener("DOMContentLoaded", setupCanvas);
@@ -43,9 +34,8 @@
             ctx = canvas.getContext("2d");
 
             period = 2;
-            sunAxiDegreesRotate = 45;
 
-            draw(ctx, canvas.width, canvas.height, period);
+            wave(ctx, canvas.width, canvas.height, period);
             drawAxis(ctx, canvas.width, canvas.height);
 
             // Execute redrawCanvas when the mouse moves
@@ -57,7 +47,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Redraw canvas
-            draw(ctx, canvas.width, canvas.height, period);
+            wave(ctx, canvas.width, canvas.height, period);
             drawAxis(ctx, canvas.width, canvas.height);
 
             // Call for MousePosition object to be updated
@@ -67,17 +57,11 @@
             // drawTextAtPoint(ctx, "X : " + mousePos.x, 15, 25);
             // drawTextAtPoint(ctx, "Y : " + mousePos.y, 15, 45);
 
-            drawCircle(mousePos.x);
+            sun(mousePos.x);
             
         }
 
-        /**
-         * ctx: a CanvasRenderingContext2D,
-         *      fetchable with canvas.getContext('2d')
-         * w: width of canvas
-         * h: height of canvas
-         */
-        draw = function (ctx, w, h, p) {
+         function wave(ctx, w, h, p) {
             ctx.fillStyle = "#000"; 
             ctx.lineWidth = 0.5;
 
@@ -90,7 +74,7 @@
             }
         }
 
-        getY = function (x, w, h, p) {
+        function getY(x, w, h, p) {
             return 0 - (h / p / 2) * Math.sin(p * Math.PI * x / w) + (h / 2);
         }
 
@@ -116,55 +100,48 @@
             return mousePos;
         }
 
-        function drawCircle() {
+        function sun() {
+
+            for(let i=45; i<=360; i+=45){
+                sunAxis(i,mousePos.x);
+            }
+
             ctx.fillStyle = "orange"; //red
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = "#000";
             let radius = 4;
-            let sunAxiDegreesRotate = 45;
 
             let y = getY(mousePos.x - canvas.width / 4, canvas.width, canvas.height, period);
 
             ctx.arc(mousePos.x, y, radius, 0, 2 * Math.PI);
             ctx.closePath();
             ctx.fill();
+            ctx.stroke();        
+        }
+        
+        function sunAxis(degrees, x){
+            let y = getY(mousePos.x - canvas.width / 4, canvas.width, canvas.height, period);
+            ctx.save();
+            // Translate the context to the point we want to rotate around
+            ctx.translate(mousePos.x, y);
+            // Perform the rotation
+            ctx.rotate(degrees * Math.PI / 180);
+
+            // Draw the line
+            ctx.beginPath();
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#000";
+
+            ctx.moveTo(8, 0);
+            ctx.lineTo(11, 0);
             ctx.stroke();
 
-            ctx.save();
-            dowSunAxis(mousePos.x,y+6);
-            ctx.restore(); 
-           
+            // Translate the context back to it's original position
+            ctx.translate(-mousePos.x, -y);
+            ctx.restore();   
         }
-        function dowSunAxis(x,y){
-                //let y = getY(mousePos.x - canvas.width / 4, canvas.width, canvas.height, period);
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = "#000";
-                ctx.fillStyle = "#000"; 
-                
-                // ctx.beginPath();
-                // ctx.moveTo(x,y);
-                // ctx.lineTo(x, y+2);
-                // ctx.stroke();
-                //ctx.save();
-                for(let i=0; i<8; i++){
-                   
-                    ctx.translate(x, y); // pivot point
-                    ctx.rotate(sunAxiDegreesRotate * Math.PI / 180); // rotate square in radians
-
-                    ctx.fillRect(x, y, 2, 2);
-
-                    // ctx.beginPath();
-                    // ctx.moveTo(x,y);
-                    // ctx.lineTo(x, y+2);
-                    // ctx.stroke();
-
-                   
-
-                    sunAxiDegreesRotate = sunAxiDegreesRotate + 45;
-                }  
-                //ctx.restore();             
-            }
     </script>
 </body>
 

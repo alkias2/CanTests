@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <script>
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const startDegree = 135;
+        const increaseDegree = 45;
+
+        function lines() {
+            var deg = 45;
+            context.beginPath();
+            context.moveTo(cw/2, ch/2);
+            context.lineTo(cw/2, 0);
+            context.stroke();
+
+            
+            context.save();
+            // Translate the context to the point we want to rotate around
+            context.translate(cw/2, ch/2);
+            // Perform the rotation
+            context.rotate(startDegree * Math.PI / 180);
+
+            // Draw the line
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(-cw/2, 0);
+            context.stroke();
+
+            // Translate the context back to it's original position
+            context.translate(-cw/2, -ch/2);
+            context.restore();
+
+
+            context.save();
+            // Translate the context to the point we want to rotate around
+            context.translate(cw/2, ch/2);
+            // Perform the rotation
+            context.rotate(180  * Math.PI / 180);
+
+            // Draw the line
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(-cw/2, 0);
+            context.stroke();
+
+            // Translate the context back to it's original position
+            context.translate(-cw/2, -ch/2);
+            context.restore();
+
+             /*context.beginPath();
+            context.moveTo(0, 250);
+            context.lineTo(500, 250);
+            context.stroke();
+           */
+        }
+
+        //circles();
+        lines();
+        //refLines();
+    </script>
+</body>
+
+</html>
